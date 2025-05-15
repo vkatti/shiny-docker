@@ -1,0 +1,23 @@
+default:
+  dbname: "store_app"
+  user: "shiny_user"
+  password: "store_app@051060342759664"
+  host: "localhost"
+  port: 3306
+
+REMOTE:
+  dbname: "store_app"
+  user: "admin"
+  password: "Stuti!28042018"
+  host: "mysql-aws-freetier-db-01.cxme0480iyc1.eu-north-1.rds.amazonaws.com"
+  port: 3306
+
+PROD:
+  dbname: "store_app"
+  user: "admin"
+  password: "Stuti051060342759664"
+  host: "zuktiproddb.cncs2mao4gim.eu-north-1.rds.amazonaws.com"
+  port: 3306
+
+  
+  

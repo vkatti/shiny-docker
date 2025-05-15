@@ -8,43 +8,47 @@
 #
 
 library(shiny)
+library(RMySQL)
+library(pool)
+
+options(shiny.port = 80L)
+config <- config::get(config = "REMOTE") # Enable this when testing in AWS RDS
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("AWS Connection Test with Docker"),
 
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
+    fluidRow(
+        tableOutput("table")
     )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
+    
+    output$table <- renderTable({
+        # Create a connection pool
+        pool <- dbPool(
+            drv = RMySQL::MySQL(),
+            dbname = config$dbname,
+            host = config$host,
+            username = config$user,
+            password = config$password
+        )
+        
+        # Query the database
+        query <- "SELECT * FROM vw_branch"  # Replace with your actual query
+        result <- dbGetQuery(pool, query)
+        
+        # Close the connection pool
+        poolClose(pool)
+        
+        # Return the result as a table
+        result
     })
+
 }
 
 # Run the application 
