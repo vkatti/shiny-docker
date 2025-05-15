@@ -11,7 +11,7 @@ library(shiny)
 library(RMySQL)
 library(pool)
 
-options(shiny.port = 80L)
+options(shiny.port = 8080L)
 config <- config::get(config = "REMOTE") # Enable this when testing in AWS RDS
 
 # Define UI for application that draws a histogram
