@@ -1,31 +1,32 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    https://shiny.posit.co/
-#
-
 library(shiny)
 library(RMySQL)
 library(pool)
+library(auth0)
+
+options(shiny.port = 8080)
 
 config <- config::get(config = "REMOTE") # Enable this when testing in AWS RDS
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("AWS Connection Test with Docker"),
+    titlePanel("AWS Connection Test with Docker and Auth0"),
 
     fluidRow(
-        tableOutput("table")
+        column(
+            width=10,
+            tableOutput("table")
+            ),
+        column(width=2,
+               actionButton("logout", "Logout", icon = icon("right-from-bracket"), class = "btn btn-danger")
+        )
     )
 )
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
     
     output$table <- renderTable({
         # Create a connection pool
@@ -47,8 +48,13 @@ server <- function(input, output) {
         # Return the result as a table
         result
     })
+    
+    observeEvent(input$logout, {
+        # Logout the user
+        auth0::logout()
+    })
 
 }
 
 # Run the application 
-shinyApp(ui = ui, server = server)
+shinyAppAuth0(ui = ui, server = server)
